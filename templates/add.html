@@ -11,14 +11,35 @@
     <header>
         <ul>
             <a href="/">Home</a>
-            <a href="add.html">Add blog</a>
-            <a href="viewID.html">Show blog by blog id</a>
-            <a href="viewUser.html">Show blogs by User</a>
-            <a href="delete.html">Delete blog</a>
-            <a href="delete.html">Update blog title</a>
-            <a href="delete.html">Update blog body</a>
+            <a href="add">Add blog</a>
+            <a href="viewID">Show blog by blog id</a>
+            <a href="viewUser">Show blogs by User</a>
+            <a href="delete">Delete blog</a>
+            <a href="delete">Update blog title</a>
+            <a href="delete">Update blog body</a>
         </ul>
     </header>
+
+    <div>
+        <form method="POST">
+            {{form.hidden_tag()}}
+            <div>
+                {{form.userID.label}}
+                {{form.userID}}
+            </div>
+            <div>
+                {{form.title.label}}
+                {{form.title}}
+            </div>
+            <div>
+                {{form.body.label}}
+                {{form.body}}
+            </div>
+            <div>
+                {{form.submit}}
+            </div>
+        </form>
+    </div>
 
 
     

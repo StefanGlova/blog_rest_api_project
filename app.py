@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, jsonify
 from blog_posts.forms import AddBlog, ShowBlogById, ShowBlogByUserId, DeleteBlog, UpdateBody, UpdateTitle
 from flask_sqlalchemy import SQLAlchemy
 import requests
@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///blog-database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
+app.config['SECRET_KEY'] = "abc159qwe951"
 db = SQLAlchemy(app)
 
 class BlogPost(db.Model):
@@ -33,50 +33,57 @@ def add():
                 title = form.title.data,
                 body = form.body.data
             )
-            url = f"https://jsonplaceholder.typicode.com/users/{userID}"
+            url = f"https://jsonplaceholder.typicode.com/users/{new_blog.userID}"
             response = requests.get(url)
 
             if response.status_code == 200:
                 db.session.add(new_blog)
                 db.session.commit()
-                return redirect(url_for("success.html", message = "Blog added sucessfully"))
+                return render_template("success.html", message = "Blog added sucessfully")
             else:
                 return render_template("error.html", error="User does not exist")
     else:
         return render_template("add.html", form=form)
 
 
-@app.route("/delete/<int:id>", methods=["GET", "DELETE"])
-def delete_blog(id):
+@app.route("/delete", methods=["GET", "DELETE"])
+def delete_blog():
     form = DeleteBlog()
     if request.method == "DELETE":
         if form.validate_on_submit():
+            id = form.id.data
             blog = BlogPost.query.get(id)
             if blog:
                 db.session.delete(blog)
                 db.session.commit()
-                return redirect(url_for("success.html", message = "Blog deleted successfully"))
+                return render_template("success.html", message = "Blog deleted successfully")
         else:
             return render_template("error.html", error = "Blog does not exist")
     else:
         return render_template("delete.html", form=form)
 
 
-@app.route("/viewID/<int:id>", methods=["GET", "POST"])
-def show_blog_by_ID(id):
+@app.route("/viewID", methods=["GET", "POST"])
+def show_blog_by_ID():
     form = ShowBlogById()
     if request.method == "POST":
         if form.validate_on_submit():
+            id = form.id.data
             blog = BlogPost.query.get(id)
             if blog:
-                return redirect(url_for("show.html", blog = blog))
+                return jsonify({
+                    "id": blog.id,
+                    "userID": blog.userID,
+                    "title": blog.title,
+                    "body": blog.body
+                })
             else:
                 api_url = f"https://jsonplaceholder.typicode.com/posts/{id}"
                 try:
                     response = requests.get(api_url)
                     if response.status_code == 200:
                         external_blog = response.json()
-                        return redirect(url_for("show.html", blog = external_blog))
+                        return jsonify(external_blog)
                 except:
                     return render_template("error.html", error="Blog not found even externally")
     else:
@@ -84,50 +91,60 @@ def show_blog_by_ID(id):
 
 
 
-@app.route("/viewUser/<int:userID>", methods=["GET", "POST"])
-def show_blog_from_user(userID):
+@app.route("/viewUser", methods=["GET", "POST"])
+def show_blog_from_user():
     form = ShowBlogByUserId()
     if request.method == "POST": 
         if form.validate_on_submit():
+            userID = form.userID.data
             blog = BlogPost.query.get(userID)
             if blog:
-                return redirect(url_for("show.html", blog=blog))
+                return jsonify({
+                    "id": blog.id,
+                    "userID": blog.userID,
+                    "title": blog.title,
+                    "body": blog.body
+                })
         else:
             return render_template("error.html", error="Blog not found for give User")
     else:
         return render_template("viewUser.html", form=form)
 
 
-@app.route("/updateTitle/<int:id>", methods=["GET", "PATCH"])
-def update_blog_title(id):
+@app.route("/updateTitle", methods=["GET", "PATCH"])
+def update_blog_title():
     form = UpdateTitle()
     if request.method == "PATCH":
         if form.validate_on_submit():
+            id = form.id.data
             blog = BlogPost.query.get(id)
             if blog:
                 blog.title = form.title.data
                 db.session.commit()
-                return redirect(url_for("success.html", message="Title updated successfully"))
+                return render_template("success.html", message="Title updated successfully")
             else:
                 return render_template("error.html", error="Blog not found - title can't be changed")
     else:
         return render_template("updateTitle.html", form=form)    
 
 
-@app.route("/updateBody/<int:id>", methods=["GET", "PATCH"])
-def update_blog_body(id):
+@app.route("/updateBody", methods=["GET", "PATCH"])
+def update_blog_body():
     form = UpdateBody()
     if request.method == "PATCH":
         if form.validate_on_submit():
+            id = form.id.data
             blog = BlogPost.query.get(id)
             if blog:
                 blog.body = form.body.data
                 db.session.commit()
-                return redirect(url_for("success.html", message="Blog text updated successfully"))
+                return render_template("success.html", message="Blog text updated successfully")
             else:
                 return render_template("error.html", error="Blog not found - text can't be changed")
     else:
         return render_template("updateBody.html", form=form) 
+
+
 
 
 if __name__ == "__main__":
