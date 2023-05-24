@@ -17,7 +17,6 @@ class BlogPost(db.Model):
     title = db.Column(db.String(250))
     body = db.Column(db.String(2000))
 
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -45,19 +44,22 @@ def add():
     else:
         return render_template("add.html", form=form)
 
-
-@app.route("/delete", methods=["GET", "DELETE"])
+# TODO deleting does not work - no error message
+@app.route("/delete", methods=["GET", "POST"])
 def delete_blog():
     form = DeleteBlog()
-    if request.method == "DELETE":
-        if form.validate_on_submit():
-            id = form.id.data
-            blog = BlogPost.query.get(id)
-            if blog:
-                db.session.delete(blog)
-                db.session.commit()
-                return render_template("success.html", message = "Blog deleted successfully")
-        else:
+    if request.method == "POST":
+        try:
+            if form.validate_on_submit():
+                id = form.id.data
+                blog = BlogPost.query.get(id)
+                if blog:
+                    db.session.delete(blog)
+                    db.session.commit()
+                    return render_template("success.html", message = "Blog deleted successfully")
+                else:
+                    raise TypeError
+        except TypeError:
             return render_template("error.html", error = "Blog does not exist")
     else:
         return render_template("delete.html", form=form)
@@ -84,37 +86,40 @@ def show_blog_by_ID():
                     if response.status_code == 200:
                         external_blog = response.json()
                         return jsonify(external_blog)
-                except:
-                    return render_template("error.html", error="Blog not found even externally")
+                    else:
+                        return render_template("error.html", error="Blog not found even externally")
+                except requests.exceptions.RequestException:
+                    return render_template("error.html", error="Failed to get blog from external API")
     else:
         return render_template("viewID.html", form=form)
-
 
 
 @app.route("/viewUser", methods=["GET", "POST"])
 def show_blog_from_user():
     form = ShowBlogByUserId()
     if request.method == "POST": 
-        if form.validate_on_submit():
-            userID = form.userID.data
-            blog = BlogPost.query.get(userID)
-            if blog:
-                return jsonify({
-                    "id": blog.id,
-                    "userID": blog.userID,
-                    "title": blog.title,
-                    "body": blog.body
-                })
-        else:
+        try:
+            if form.validate_on_submit():
+                userID = form.userID.data
+                blog = BlogPost.query.filter_by(userID=userID).first()
+                if blog:
+                    return jsonify({
+                        "id": blog.id,
+                        "userID": blog.userID,
+                        "title": blog.title,
+                        "body": blog.body
+                    })
+                else:
+                    raise TypeError
+        except TypeError:
             return render_template("error.html", error="Blog not found for give User")
     else:
         return render_template("viewUser.html", form=form)
 
-
-@app.route("/updateTitle", methods=["GET", "PATCH"])
+@app.route("/updateTitle", methods=["GET", "POST"])
 def update_blog_title():
     form = UpdateTitle()
-    if request.method == "PATCH":
+    if request.method == "POST":
         if form.validate_on_submit():
             id = form.id.data
             blog = BlogPost.query.get(id)
@@ -127,11 +132,10 @@ def update_blog_title():
     else:
         return render_template("updateTitle.html", form=form)    
 
-
-@app.route("/updateBody", methods=["GET", "PATCH"])
+@app.route("/updateBody", methods=["GET", "POST"])
 def update_blog_body():
     form = UpdateBody()
-    if request.method == "PATCH":
+    if request.method == "POST":
         if form.validate_on_submit():
             id = form.id.data
             blog = BlogPost.query.get(id)

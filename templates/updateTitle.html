@@ -15,13 +15,13 @@
             <a href="viewID">Show blog by blog id</a>
             <a href="viewUser">Show blogs by User</a>
             <a href="delete">Delete blog</a>
-            <a href="delete">Update blog title</a>
-            <a href="delete">Update blog body</a>
+            <a href="updateTitle">Update blog title</a>
+            <a href="updateBody">Update blog body</a>
         </ul>
     </header>
 
     <div>
-        <form method="PATCH" action="{{ url_for('update_blog_title') }}">
+        <form method="POST" action="{{ url_for('update_blog_title') }}">
             {{form.hidden_tag()}}
             <div>
                 {{form.id.label}}

@@ -60,5 +60,5 @@ class UpdateTitle(FlaskForm):
 # TODO implement on route - if not found, raise error message
 class UpdateBody(FlaskForm):
     id = IntegerField("id", validators=[DataRequired()])
-    body = TextAreaField("id", validators=[DataRequired()])
+    body = TextAreaField("body", validators=[DataRequired()])
     submit = SubmitField("submit")
