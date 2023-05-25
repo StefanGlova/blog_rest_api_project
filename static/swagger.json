@@ -1,0 +1,86 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Flask REST API for adding, updating, viewing and deleting blogs",
+        "version": "1.0.0",
+        "title": "blog_rest_api_project"
+    },
+    "tags": [
+        {
+            "name": "Products API",
+            "description": "Test API"
+        }
+    ],
+    "servers": [
+        {
+            "url": "http://127.0.0.1:5000"
+        }
+    ],
+    "components": {
+        "schemas": {
+            "AddBlog": {
+                "type": "object",
+                "properties": {
+                    "userID": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "body": {
+                        "type": "string"
+                    }
+                }
+
+            }, 
+            "ShowBlogById": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    }
+                }
+
+            },
+            "ShowBlogByUserId": {
+                "type": "object",
+                "properties": {
+                    "userID": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "DeleteBlog": {
+                "type": "object",
+                "properties": {
+                    "userID": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "UpdateTitle": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "title": {
+                        "type": "string"
+                    }
+                }
+            },
+            "UpdateBody": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "body": {
+                        "type": "string"
+                    }
+                }
+            }
+
+        }
+    }
+}

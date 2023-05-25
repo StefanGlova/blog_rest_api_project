@@ -1,6 +1,7 @@
-from flask import Flask, render_template, url_for, request, redirect, jsonify
+from flask import Flask, render_template, request, jsonify
 from blog_posts.forms import AddBlog, ShowBlogById, ShowBlogByUserId, DeleteBlog, UpdateBody, UpdateTitle
 from flask_sqlalchemy import SQLAlchemy
+from flask_swagger_ui import get_swaggerui_blueprint
 import requests
 
 
@@ -10,6 +11,17 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///blog-database.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['SECRET_KEY'] = "abc159qwe951"
 db = SQLAlchemy(app)
+SWAGGER_URL = "/swagger"
+API_URL = "/static/swagger.json"
+SWAGGER_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config = {
+        "app_name": "blog_posts"
+    }
+)
+
+app.register_blueprint(SWAGGER_BLUEPRINT, url_prefix = SWAGGER_URL)
 
 class BlogPost(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,7 +56,7 @@ def add():
     else:
         return render_template("add.html", form=form)
 
-# TODO deleting does not work - no error message
+
 @app.route("/delete", methods=["GET", "POST"])
 def delete_blog():
     form = DeleteBlog()
@@ -147,8 +159,6 @@ def update_blog_body():
                 return render_template("error.html", error="Blog not found - text can't be changed")
     else:
         return render_template("updateBody.html", form=form) 
-
-
 
 
 if __name__ == "__main__":
