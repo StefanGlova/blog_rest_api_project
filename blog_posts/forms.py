@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, IntegerField
 from wtforms.validators import DataRequired
 
+
 class AddBlog(FlaskForm):
     userID = IntegerField("userID", validators=[DataRequired()])
     title = StringField("title", validators=[DataRequired()])

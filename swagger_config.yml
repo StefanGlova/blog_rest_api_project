@@ -1,8 +1,0 @@
-swagger: "2.0"
-info:
-  title: Blog API
-  description: Flask REST API for posting, viewing, deleting and updating blogs
-  version: "1.0"
-  contact:
-    name: Stefan Glova
-    email: glovastefan@gmail.com
