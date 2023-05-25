@@ -1,3 +1,36 @@
-a {
+img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 70%;
+
+}
+
+.container{
+    width: 100%;
+}
+
+.btn-secondary{
+    margin-top: 10px;
+    margin-right: 2%;
+}
+
+#success_msg{
+    font-size: large;
+    text-align: center;
     color: green;
+    font-weight: bold;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#error_msg{
+    font-size: large;
+    text-align: center;
+    color: red;
+    font-weight: bold;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
